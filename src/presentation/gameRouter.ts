@@ -1,17 +1,12 @@
-import express from "express";
-import { connectMySQL } from "../dataaccess/connection";
-import { GameGateway } from "../dataaccess/gameGateway";
-import { TurnGateway } from "../dataaccess/turnGateway";
-import { SquareGateway } from "../dataaccess/squareGateway";
-import { DARK, INITIAL_BOARD } from "../application/constants";
-import { GameService } from "../application/gameService";
+import express from 'express'
+import { GameService } from '../application/gameService'
 
-export const gameRouter = express.Router();
+export const gameRouter = express.Router()
 
-const gameService = new GameService();
+const gameService = new GameService()
 
-gameRouter.post("/api/games", async (req, res) => {
-  await gameService.startNewGame();
+gameRouter.post('/api/games', async (req, res) => {
+  await gameService.startNewGame()
 
-  res.status(201).end();
-});
+  res.status(201).end()
+})

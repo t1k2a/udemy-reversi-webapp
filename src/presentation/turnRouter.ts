@@ -17,7 +17,7 @@ turnRouter.get(
   async (req, res: express.Response<TurnGetResponseBody>) => {
     const turnCount = parseInt(req.params.turnCount);
 
-    const output = await turnService.findLatestGameTurnByturnCount(turnCount);
+    const output = await turnService.findLatestGameTurnByTurnCount(turnCount);
 
     const responseBody = {
       turnCount: output.turnCount,

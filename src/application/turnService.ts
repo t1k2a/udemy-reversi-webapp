@@ -3,15 +3,17 @@ import { GameGateway } from "../dataaccess/gameGateway";
 import { MoveGateway } from "../dataaccess/moveGateway";
 import { SquareGateway } from "../dataaccess/squareGateway";
 import { TurnGateway } from "../dataaccess/turnGateway";
-import { DARK, LIGHT } from "./constants";
+import { Board } from "../domain/board";
+import { toDisc } from "../domain/disc";
+import { Point } from "../domain/point";
+import { Turn } from "../domain/turn";
 
 const gameGateway = new GameGateway();
 const turnGateway = new TurnGateway();
 const moveGateway = new MoveGateway();
-
 const squareGateway = new SquareGateway();
 
-class FindLatestGameTurnByturnCountOutput {
+class FindLatestGameTurnByTurnCountOutput {
   constructor(
     private _turnCount: number,
     private _board: number[][],
@@ -37,9 +39,9 @@ class FindLatestGameTurnByturnCountOutput {
 }
 
 export class TurnService {
-  async findLatestGameTurnByturnCount(
+  async findLatestGameTurnByTurnCount(
     turnCount: number
-  ): Promise<FindLatestGameTurnByturnCountOutput> {
+  ): Promise<FindLatestGameTurnByTurnCountOutput> {
     const conn = await connectMySQL();
     try {
       const gameRecord = await gameGateway.findLatest(conn);
@@ -65,10 +67,11 @@ export class TurnService {
         board[s.y][s.x] = s.disc;
       });
 
-      return new FindLatestGameTurnByturnCountOutput(
+      return new FindLatestGameTurnByTurnCountOutput(
         turnCount,
         board,
         turnRecord.nextDisc,
+        // TODO 決着がついている場合、game_results テーブルから取得する
         undefined
       );
     } finally {
@@ -106,25 +109,27 @@ export class TurnService {
         board[s.y][s.x] = s.disc;
       });
 
-      // TODO 盤面に置けるかチェック
+      const previousTurn = new Turn(
+        gameRecord.id,
+        previousTurnCount,
+        toDisc(previousTurnRecord.nextDisc),
+        undefined,
+        new Board(board),
+        previousTurnRecord.endAt
+      );
 
       // 石を置く
-      board[y][x] = disc;
-
-      // TODO ひっくり返す
+      const newTurn = previousTurn.placeNext(toDisc(disc), new Point(x, y));
 
       // ターンを保存する
-      const nextDisc = disc === DARK ? LIGHT : DARK;
-      const now = new Date();
-
       const turnRecord = await turnGateway.insert(
         conn,
-        gameRecord.id,
-        turnCount,
-        nextDisc,
-        now
+        newTurn.gameId,
+        newTurn.turnCount,
+        newTurn.nextDisc,
+        newTurn.endAt
       );
-      await squareGateway.insertAll(conn, turnRecord.id, board);
+      await squareGateway.insertAll(conn, turnRecord.id, newTurn.board.discs);
       await moveGateway.insert(conn, turnRecord.id, disc, x, y);
 
       await conn.commit();

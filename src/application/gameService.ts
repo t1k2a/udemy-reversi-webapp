@@ -1,9 +1,9 @@
-import express from "express";
 import { connectMySQL } from "../dataaccess/connection";
 import { GameGateway } from "../dataaccess/gameGateway";
-import { TurnGateway } from "../dataaccess/turnGateway";
 import { SquareGateway } from "../dataaccess/squareGateway";
-import { DARK, INITIAL_BOARD } from "../application/constants";
+import { TurnGateway } from "../dataaccess/turnGateway";
+import { DARK, INITIAL_BOARD } from "./constants";
+
 const gameGateway = new GameGateway();
 const turnGateway = new TurnGateway();
 const squareGateway = new SquareGateway();
@@ -17,7 +17,6 @@ export class GameService {
       await conn.beginTransaction();
 
       const gameRecord = await gameGateway.insert(conn, now);
-
       const turnRecord = await turnGateway.insert(
         conn,
         gameRecord.id,
@@ -25,7 +24,6 @@ export class GameService {
         DARK,
         now
       );
-
       await squareGateway.insertAll(conn, turnRecord.id, INITIAL_BOARD);
 
       await conn.commit();
