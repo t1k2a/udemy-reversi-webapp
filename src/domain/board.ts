@@ -1,5 +1,5 @@
-import { Disc } from './disc'
-import { Move } from './move'
+import { Disc } from "./disc";
+import { Move } from "./move";
 
 export class Board {
   constructor(private _discs: Disc[][]) {}
@@ -10,19 +10,36 @@ export class Board {
     // 盤面をコピー
     const newDiscs = this._discs.map((line) => {
       return line.map((disc) => {
-        return disc
-      })
-    })
+        return disc;
+      });
+    });
 
     // 石を置く
-    newDiscs[move.point.y][move.point.x] = move.disc
+    newDiscs[move.point.y][move.point.x] = move.disc;
 
     // TODO ひっくり返す
 
-    return new Board(newDiscs)
+    return new Board(newDiscs);
   }
 
   get discs() {
-    return this._discs
+    return this._discs;
   }
 }
+
+const E = Disc.Empty;
+const D = Disc.Dark;
+const L = Disc.Light;
+
+const INITIAL_DISCS = [
+  [E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E],
+  [E, E, E, D, L, E, E, E],
+  [E, E, E, L, D, E, E, E],
+  [E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E],
+];
+
+export const initial_board = new Board(INITIAL_DISCS);
