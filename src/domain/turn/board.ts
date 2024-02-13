@@ -1,11 +1,21 @@
 import { Disc } from "./disc";
 import { Move } from "./move";
+import { Point } from "./point";
 
 export class Board {
   constructor(private _discs: Disc[][]) {}
 
   place(move: Move): Board {
     // TODO 盤面に置けるかチェック
+    if (this._discs[move.point.y][move.point.x] !== Disc.Empty) {
+      throw new Error("selected point is not empty");
+    }
+
+    const flipPoints = this.listFlipPoints();
+
+    if (flipPoints.length === 0) {
+      throw new Error("flip points is empty");
+    }
 
     // 盤面をコピー
     const newDiscs = this._discs.map((line) => {
@@ -20,6 +30,10 @@ export class Board {
     // TODO ひっくり返す
 
     return new Board(newDiscs);
+  }
+
+  private listFlipPoints(): Point[] {
+    return [new Point(0, 0)];
   }
 
   get discs() {
