@@ -1,4 +1,5 @@
-import { Board, initial_board } from "./board";
+import { DomeinError } from "../../error/domainError";
+import { Board, initialBoard } from "./board";
 import { Disc } from "./disc";
 import { Move } from "./move";
 import { Point } from "./point";
@@ -16,7 +17,10 @@ export class Turn {
   placeNext(disc: Disc, point: Point): Turn {
     // 打とうとした石が、次の石ではない場合、置くことはできない
     if (disc !== this._nextDisc) {
-      throw new Error("Invalid disc");
+      throw new DomeinError(
+        "SelectedDiscIsNotNextDisc",
+        "Selected disc is not next disc"
+      );
     }
 
     const move = new Move(disc, point);
@@ -62,5 +66,5 @@ export class Turn {
 }
 
 export function firstTurn(gameId: number, endAt: Date): Turn {
-  return new Turn(gameId, 0, Disc.Dark, undefined, initial_board, endAt);
+  return new Turn(gameId, 0, Disc.Dark, undefined, initialBoard, endAt);
 }

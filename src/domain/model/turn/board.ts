@@ -1,3 +1,4 @@
+import { DomeinError } from "../../error/domainError";
 import { Disc, isOppositeDisc } from "./disc";
 import { Move } from "./move";
 import { Point } from "./point";
@@ -12,7 +13,10 @@ export class Board {
   place(move: Move): Board {
     // 空のマス目ではない場合、置くことはできない
     if (this._discs[move.point.y][move.point.x] !== Disc.Empty) {
-      throw new Error("Selected point is not empty");
+      throw new DomeinError(
+        "SelectedPointIdNotEmpty",
+        "Selected point is not empty"
+      );
     }
 
     // ひっくり返せる点をリストアップ
@@ -20,7 +24,7 @@ export class Board {
 
     // ひっくり返せる点がない場合、置くことはできない
     if (flipPoints.length === 0) {
-      throw new Error("Flip points is empty");
+      throw new DomeinError("FlipPointsIsEmpty", "Flip points is empty");
     }
 
     // 盤面をコピー
@@ -90,12 +94,12 @@ export class Board {
   private wallDiscs(): Disc[][] {
     const walled: Disc[][] = [];
 
-    const topAndBottomWall = Array(this._discs[0].length + 2).fill(Disc.Wall);
+    const topAndBottomWall = Array(this._discs[0].length + 2).fill(Disc.wall);
 
     walled.push(topAndBottomWall);
 
     this._discs.forEach((line) => {
-      const walledLine = [Disc.Wall, ...line, Disc.Wall];
+      const walledLine = [Disc.wall, ...line, Disc.wall];
       walled.push(walledLine);
     });
 
