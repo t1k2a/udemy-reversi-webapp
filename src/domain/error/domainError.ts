@@ -1,10 +1,13 @@
-type DomeinerrorType =
+type DomainErrorType =
   | "SelectedPointIdNotEmpty"
   | "FlipPointsIsEmpty"
   | "SelectedDiscIsNotNextDisc"
-  | "PreviousTurnNotFound";
-export class DomeinError extends Error {
-  constructor(private _type: DomeinerrorType, message: string) {
+  | "PreviousTurnNotFound"
+  | "SpecifiedTurnNotFound"
+  | "InvalidPoint"
+  | "InvalidDiscValue";
+export class DomainError extends Error {
+  constructor(private _type: DomainErrorType, message: string) {
     super(message);
   }
 
