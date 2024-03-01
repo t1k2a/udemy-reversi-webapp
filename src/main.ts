@@ -38,6 +38,7 @@ function errorHandler(
   }
 
   if (err instanceof ApplicationError) {
+    console.log(err);
     switch (err.type) {
       case "LatestGameNotFound":
         res.status(404).json({

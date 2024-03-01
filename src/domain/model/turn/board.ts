@@ -14,7 +14,7 @@ export class Board {
     // 空のマス目ではない場合、置くことはできない
     if (this._discs[move.point.y][move.point.x] !== Disc.Empty) {
       throw new DomainError(
-        "SelectedPointIdNotEmpty",
+        "SelectedPointIsNotEmpty",
         "Selected point is not empty"
       );
     }
@@ -37,10 +37,11 @@ export class Board {
     // 石を置く
     newDiscs[move.point.y][move.point.x] = move.disc;
 
-    // TODO ひっくり返す
+    // ひっくり返す
     flipPoints.forEach((p) => {
       newDiscs[p.y][p.x] = move.disc;
     });
+
     return new Board(newDiscs);
   }
 
@@ -91,15 +92,48 @@ export class Board {
     return flipPoints;
   }
 
+  existValidMove(disc: Disc): boolean {
+    for (let y = 0; y < this._discs.length; y++) {
+      const line = this._discs[y];
+
+      for (let x = 0; x < line.length; x++) {
+        const discOnBoard = line[x];
+
+        // 空ではない点は無視
+        if (discOnBoard !== Disc.Empty) {
+          continue;
+        }
+
+        const move = new Move(disc, new Point(x, y));
+        const flipPoints = this.listFlipPoints(move);
+
+        // ひっくり返せる点がある場合、置ける場所がある
+        if (flipPoints.length !== 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  count(disc: Disc): number {
+    return this._discs
+      .map((line) => {
+        return line.filter((discOnBoard) => discOnBoard === disc).length;
+      })
+      .reduce((v1, v2) => v1 + v2, 0);
+  }
+
   private wallDiscs(): Disc[][] {
     const walled: Disc[][] = [];
 
-    const topAndBottomWall = Array(this._discs[0].length + 2).fill(Disc.wall);
+    const topAndBottomWall = Array(this._discs[0].length + 2).fill(Disc.Wall);
 
     walled.push(topAndBottomWall);
 
     this._discs.forEach((line) => {
-      const walledLine = [Disc.wall, ...line, Disc.wall];
+      const walledLine = [Disc.Wall, ...line, Disc.Wall];
       walled.push(walledLine);
     });
 

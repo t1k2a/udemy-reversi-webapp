@@ -4,7 +4,7 @@ export const Disc = {
   Empty: 0,
   Dark: 1,
   Light: 2,
-  wall: 3,
+  Wall: 3,
 } as const;
 
 export type Disc = (typeof Disc)[keyof typeof Disc];
@@ -13,6 +13,7 @@ export function toDisc(value: any): Disc {
   if (!Object.values(Disc).includes(value)) {
     throw new DomainError("InvalidDiscValue", "Invalid disc value");
   }
+
   return value as Disc;
 }
 
