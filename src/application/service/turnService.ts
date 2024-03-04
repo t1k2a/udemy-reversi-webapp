@@ -119,7 +119,6 @@ export class TurnService {
         const winnerDisc = newTurn.winnerDisc();
         const gameResult = new GameResult(game.id, winnerDisc, newTurn.endAt);
         await gameResultRepository.save(conn, gameResult);
-        // TODO 対戦結果を保存
       }
       await conn.commit();
     } finally {
